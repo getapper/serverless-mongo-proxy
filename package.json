@@ -1,0 +1,28 @@
+{
+  "name": "serverless-mongo-proxy",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "tsc": "rimraf dist && tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "repository": {
+    "url": "https://github.com/getapper/serverless-mongo-proxy"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "8.10.59",
+    "@types/mongodb": "3.5.25",
+    "@types/node": "14.0.23",
+    "@typescript-eslint/parser": "3.6.1",
+    "eslint": "7.5.0",
+    "rimraf": "3.0.2",
+    "typescript": "3.9.7"
+  },
+  "dependencies": {
+    "mongodb": "3.5.9"
+  }
+}
