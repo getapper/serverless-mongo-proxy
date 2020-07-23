@@ -2,7 +2,7 @@ import { Cursor, Db, MongoClient } from 'mongodb';
 import { Context } from 'aws-lambda';
 
 interface ProxyRequest {
-  collection: string
+  collectionName: string
   operation: string
   args: any[]
 }
@@ -15,7 +15,7 @@ export default async function(event: ProxyRequest, context: Context) {
 
   if (!mongoClient) {
     try {
-      mongoClient = await MongoClient.connect(process.env['MONGO_URI'], {
+      mongoClient = await MongoClient.connect(process.env['MONGO_URI'] || 'mongodb://localhost:27017', {
         connectTimeoutMS: 10000,
         socketTimeoutMS: 10000,
         serverSelectionTimeoutMS: 10000,
@@ -31,8 +31,8 @@ export default async function(event: ProxyRequest, context: Context) {
   }
 
   try {
-    const { collection, operation, args } = event;
-    const result = await db.collection(collection)[operation](...args);
+    const { collectionName, operation, args } = event;
+    const result = await db.collection(collectionName)[operation](...args);
     if (result instanceof Cursor) {
       return result.toArray();
     }
