@@ -12,9 +12,7 @@ class ServerlessMongoProxy {
   constructor(serverless, options) {
     this.serverless = serverless;
     this.options = options;
-    this.commands = {
-      // @TODO add lifecycle events
-    };
+    this.commands = {};
     this.hooks = {
       'before:offline:start:init': this.beforeOfflineStart.bind(this),
       'before:offline:start': this.beforeOfflineStart.bind(this),
