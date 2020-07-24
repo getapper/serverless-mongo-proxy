@@ -8,10 +8,12 @@ class ServerlessMongoProxy {
   hooks: any
   proxyFunctionName = '_serverless-mongo-proxy'
   outputFolder = '_mongo-proxy'
+  config: any
 
   constructor(serverless, options) {
     this.serverless = serverless;
     this.options = options;
+    this.config = this.serverless.service?.custom['mongo-proxy'];
     this.commands = {};
     this.hooks = {
       'before:offline:start:init': this.beforeOfflineStart.bind(this),
@@ -19,6 +21,7 @@ class ServerlessMongoProxy {
       'after:package:initialize': this.afterPackageInitialize.bind(this),
       'after:package:createDeploymentArtifacts': this.afterCreateDeploymentArtifacts.bind(this),
     };
+    this.setEnvVariables();
   }
 
   afterPackageInitialize() {
@@ -55,6 +58,10 @@ class ServerlessMongoProxy {
         || (this.serverless.service.defaults && this.serverless.service.defaults.region)
         || 'us-east-1',
     };
+  }
+
+  setEnvVariables() {
+    process.env['MONGO_URI'] = process.env['MONGO_URI'] || this.config.mongoUri || 'mongodb://localhost:27017';
   }
 }
 

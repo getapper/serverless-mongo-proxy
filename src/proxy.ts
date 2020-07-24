@@ -15,7 +15,7 @@ export default async function(event: ProxyRequest, context: Context) {
 
   if (!mongoClient) {
     try {
-      mongoClient = await MongoClient.connect(process.env['MONGO_URI'] || 'mongodb://localhost:27017', {
+      mongoClient = await MongoClient.connect(process.env['MONGO_URI'], {
         connectTimeoutMS: 10000,
         socketTimeoutMS: 10000,
         serverSelectionTimeoutMS: 10000,

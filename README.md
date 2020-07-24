@@ -24,3 +24,12 @@ provider:
         - lambda:InvokeFunction
       Resource: '*'
 ```
+
+## Plugin options
+Mongodb endpoint can be set through the environment variable `MONGO_URI` or
+under the custom section of your Serverless `serverless.yaml`:
+```yaml
+custom:
+  mongo-proxy:
+    mongoUri: 'mongodb://localhost:27017'
+```
