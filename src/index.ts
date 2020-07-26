@@ -39,29 +39,24 @@ class ServerlessMongoProxy {
   }
 
   createProxy(handlerFolder: string) {
-    const options = this.getResolvedStageAndRegion();
+    const stage = this.getResolvedStage();
     this.serverless.service.functions[this.proxyFunctionName] = {
       handler: path.join(handlerFolder, 'proxy.default'),
-      name: `${this.serverless.service.service}-${options.stage}-${this.proxyFunctionName}`,
+      name: `${this.serverless.service.service}-${stage}-${this.proxyFunctionName}`,
       events: [],
     };
   }
 
-  getResolvedStageAndRegion() {
-    return {
-      stage: this.options.stage
-        || this.serverless.service.provider.stage
-        || (this.serverless.service.defaults && this.serverless.service.defaults.stage)
-        || 'dev',
-      region: this.options.region
-        || this.serverless.service.provider.region
-        || (this.serverless.service.defaults && this.serverless.service.defaults.region)
-        || 'us-east-1',
-    };
+  getResolvedStage() {
+    return this.options.stage ||
+      this.serverless.service.provider.stage ||
+      (this.serverless.service.defaults && this.serverless.service.defaults.stage) ||
+      'dev';
   }
 
   setEnvVariables() {
     process.env['MONGO_URI'] = process.env['MONGO_URI'] || this.config.mongoUri || 'mongodb://localhost:27017';
+    this.serverless.service.provider.environment['MONGO_URI'] = process.env['MONGO_URI'];
   }
 }
 

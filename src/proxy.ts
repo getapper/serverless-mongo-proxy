@@ -1,5 +1,9 @@
 import { Cursor, Db, MongoClient } from 'mongodb';
 import { Context } from 'aws-lambda';
+import dotenv from 'dotenv';
+import dotenvExpand from 'dotenv-expand';
+
+dotenvExpand(dotenv.config());
 
 interface ProxyRequest {
   collectionName: string

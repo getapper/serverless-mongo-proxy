@@ -23,6 +23,8 @@
     "typescript": "3.9.7"
   },
   "dependencies": {
+    "dotenv": "8.2.0",
+    "dotenv-expand": "5.1.0",
     "mongodb": "3.5.9"
   }
 }

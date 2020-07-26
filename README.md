@@ -33,3 +33,4 @@ custom:
   mongo-proxy:
     mongoUri: 'mongodb://localhost:27017'
 ```
+or also through a .env file
