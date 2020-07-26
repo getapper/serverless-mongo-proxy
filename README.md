@@ -6,7 +6,7 @@ A serverless plugin that creates a mongodb proxy
 
 Install via npm in the root of your Serverless service:
 ```sh
-npm install --save-dev serverless-mongo-proxy
+npm install serverless-mongo-proxy
 ```
 
 Add the plugin to the `plugins` array in your Serverless `serverless.yaml`:
