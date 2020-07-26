@@ -1,14 +1,14 @@
 {
   "name": "serverless-mongo-proxy",
-  "version": "1.0.0",
-  "description": "",
+  "version": "0.0.1",
+  "description": "A serverless plugin that creates a mongodb proxy",
   "main": "dist/index.js",
   "scripts": {
     "tsc": "rimraf dist && tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["serverless", "plugin", "mongodb", "proxy"],
+  "author": "Andrea Santu",
   "license": "ISC",
   "repository": {
     "url": "https://github.com/getapper/serverless-mongo-proxy"
@@ -26,5 +26,8 @@
     "dotenv": "8.2.0",
     "dotenv-expand": "5.1.0",
     "mongodb": "3.5.9"
-  }
+  },
+  "files": [
+    "dist"
+  ]
 }
