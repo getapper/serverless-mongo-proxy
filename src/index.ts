@@ -1,5 +1,7 @@
 import path from 'path';
 import { copyFileSync, mkdirSync, rmdirSync } from 'fs';
+import dotenv from 'dotenv';
+import dotenvExpand from 'dotenv-expand';
 
 class ServerlessMongoProxy {
   serverless: any
@@ -50,14 +52,20 @@ class ServerlessMongoProxy {
   getResolvedStage() {
     return this.options.stage ||
       this.serverless.service.provider.stage ||
+      process.env['ENV_NAME'] ||
       (this.serverless.service.defaults && this.serverless.service.defaults.stage) ||
       'dev';
   }
 
   setEnvVariables() {
-    process.env['MONGO_URI'] = process.env['MONGO_URI'] || this.config?.mongoUri || 'mongodb://localhost:27017';
+    dotenvExpand(dotenv.config());
     this.serverless.service.provider.environment = this.serverless.service.provider.environment || {};
-    this.serverless.service.provider.environment['MONGO_URI'] = process.env['MONGO_URI'];
+
+    const env = this.serverless.service.provider.environment;
+    env['MONGO_URI'] = process.env['MONGO_URI'] || this.config?.mongoUri || 'mongodb://localhost:27017';
+    env['MONGO_DB_NAME'] = process.env['MONGO_DB_NAME'] || this.config?.mongoDbName;
+
+    process.env = { ...process.env, ...env };
   }
 }
 

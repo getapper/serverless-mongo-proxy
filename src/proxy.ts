@@ -24,7 +24,8 @@ export default async function(event: ProxyRequest, context: Context) {
         socketTimeoutMS: 10000,
         serverSelectionTimeoutMS: 10000,
       });
-      db = mongoClient.db(); // @TODO process.env['MONGO_DB_NAME'] ?
+      const dbName = process.env['MONGO_DB_NAME'];
+      db = dbName ? mongoClient.db(dbName) : mongoClient.db();
     } catch (e) {
       return {
         error: {

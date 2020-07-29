@@ -25,12 +25,24 @@ provider:
       Resource: '*'
 ```
 
-## Plugin options
-Mongodb endpoint can be set through the environment variable `MONGO_URI` or
-under the custom section of your Serverless `serverless.yaml`:
+## Environment Variables
+
+#### Mongodb
+Mongodb endpoint and database name can be set respectively through the environment variables
+`MONGO_URI` and `MONGO_DB_NAME` or under the custom section of your Serverless `serverless.yaml`:
 ```yaml
 custom:
   mongo-proxy:
     mongoUri: 'mongodb://localhost:27017'
+    mongoDbName: 'myDatabase'
 ```
-or also through a .env file
+
+#### Stage name
+Stage name can be set under the provider section of your Serverless `serverless.yaml`:
+```yaml
+provider:
+  stage: 'dev'
+```
+or through the environment variable `ENV_NAME` 
+
+Note: all variables can be set also through a .env file
