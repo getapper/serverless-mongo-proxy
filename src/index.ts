@@ -52,7 +52,7 @@ class ServerlessMongoProxy {
   getResolvedStage() {
     return this.options.stage ||
       this.serverless.service.provider.stage ||
-      process.env['ENV_NAME'] ||
+      process.env['STAGE_NAME'] ||
       (this.serverless.service.defaults && this.serverless.service.defaults.stage) ||
       'dev';
   }

@@ -43,6 +43,6 @@ Stage name can be set under the provider section of your Serverless `serverless.
 provider:
   stage: 'dev'
 ```
-or through the environment variable `ENV_NAME` 
+or through the environment variable `STAGE_NAME` 
 
 Note: all variables can be set also through a .env file
