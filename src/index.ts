@@ -46,7 +46,9 @@ class ServerlessMongoProxy {
       handler: path.join(handlerFolder, 'proxy.default'),
       name: `${this.serverless.service.service}-${stage}-${this.proxyFunctionName}`,
       events: [],
+      ...this.config?.functionFields,
     };
+    console.log('proxy created', this.serverless.service.functions[this.proxyFunctionName]);
   }
 
   getResolvedStage() {

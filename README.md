@@ -46,3 +46,16 @@ provider:
 or through the environment variable `STAGE_NAME` 
 
 Note: all variables can be set also through a .env file
+
+## Additional proxy function fields
+Other fields can be specified under `functionFields`.
+
+For example to use the plugin with serverless-plugin-warmup add these fields on your
+Serverless `serverless.yaml`:
+```yaml
+custom:
+  mongo-proxy:
+    functionFields:
+      warmup:
+        enabled: true
+```
