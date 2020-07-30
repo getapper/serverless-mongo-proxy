@@ -1,6 +1,6 @@
 {
   "name": "serverless-mongo-proxy",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "A serverless plugin that creates a mongodb proxy",
   "main": "dist/index.js",
   "scripts": {
@@ -8,7 +8,12 @@
     "tsc": "rimraf dist && tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": ["serverless", "plugin", "mongodb", "proxy"],
+  "keywords": [
+    "serverless",
+    "plugin",
+    "mongodb",
+    "proxy"
+  ],
   "author": "Andrea Santu",
   "license": "ISC",
   "repository": {
