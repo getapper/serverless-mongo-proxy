@@ -48,7 +48,6 @@ class ServerlessMongoProxy {
       events: [],
       ...this.config?.functionFields,
     };
-    console.log('proxy created', this.serverless.service.functions[this.proxyFunctionName]);
   }
 
   getResolvedStage() {
