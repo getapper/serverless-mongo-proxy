@@ -1,4 +1,5 @@
 import { Cursor, Db, MongoClient } from 'mongodb';
+import Bson from 'bson';
 import { Context } from 'aws-lambda';
 import dotenv from 'dotenv';
 import dotenvExpand from 'dotenv-expand';
@@ -11,15 +12,20 @@ interface ProxyRequest {
   args: any[]
 }
 
+interface Event {
+  bufferValues: string
+}
+
 let mongoClient: MongoClient;
 let db: Db;
 
-export default async function(event: ProxyRequest, context: Context) {
+export default async function(event: Event, context: Context) {
   context.callbackWaitsForEmptyEventLoop = false;
 
   if (!mongoClient) {
     try {
       mongoClient = await MongoClient.connect(process.env['MONGO_URI'], {
+        useUnifiedTopology: true,
         connectTimeoutMS: 10000,
         socketTimeoutMS: 10000,
         serverSelectionTimeoutMS: 10000,
@@ -35,18 +41,43 @@ export default async function(event: ProxyRequest, context: Context) {
     }
   }
 
+  let request: ProxyRequest;
   try {
-    const { collectionName, operation, args } = event;
-    const result = await db.collection(collectionName)[operation](...args);
+    request = Bson.deserialize(Buffer.from(event.bufferValues));
+  } catch (e){
+    return {
+      error: {
+        message: `Error on bson serialize! ${e}`,
+      },
+    };
+  }
+
+  let result;
+  try {
+    const { collectionName, operation, args } = request;
+    result = await db.collection(collectionName)[operation](...args);
     if (result instanceof Cursor) {
-      return result.toArray();
+      result = await result.toArray();
     }
-    return result;
   } catch (e) {
     return {
       error: {
         name: e.constructor.name,
         message: e.message,
+      },
+    };
+  }
+
+  try {
+    delete result?.connection;
+    delete result?.message;
+
+    const resultBuffer = Bson.serialize(Object.assign({}, result));
+    return Array.from(resultBuffer.values());
+  } catch (e) {
+    return {
+      error: {
+        message: `Error on bson serialize! ${e}`,
       },
     };
   }
