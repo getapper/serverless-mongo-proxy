@@ -31,7 +31,7 @@
   "dependencies": {
     "dotenv": "8.2.0",
     "dotenv-expand": "5.1.0",
-    "mongodb": "3.5.9"
+    "mongodb": "3.4.1"
   },
   "files": [
     "dist"
