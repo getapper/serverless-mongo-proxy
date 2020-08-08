@@ -59,3 +59,59 @@ custom:
       warmup:
         enabled: true
 ```
+
+## Usage
+The plugin creates a lambda function that can be invoked through the aws-sdk:
+```js
+const { Lambda } = require('aws-sdk')
+...
+const lambda = new Lambda()
+lambda.invoke({
+  FunctionName: `${serviceName}-${stage}-_serverless-mongo-proxy`,
+  InvocationType: 'RequestResponse',
+  Payload: JSON.stringify({ bufferValues }),
+}).then(...)
+```
+see [aws docs](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#invoke-property) for details.
+
+#### Payload
+The proxy uses [bson](https://www.npmjs.com/package/bson) to serialize/deserialize data between the proxy itself
+and the caller.
+
+The expected payload (_stringified_) has shape: `Payload: { bufferValues: number[] }` where `number[]`
+contains the values of the buffer representing the request, serialized using bson.
+
+Example: `const bufferValues = Array.from(bson.serialize({...}).values())` 
+
+###### Proxy Request
+The actual proxy request has shape:
+
+```typescript
+interface ProxyRequest {
+  collectionName: string
+  operation: string // a mongodb operation (find, insert...)
+  args: any[]
+}
+```
+
+#### Full example
+```js
+const { Lambda } = require('aws-sdk')
+...
+const lambda = new Lambda()
+const proxyRequest = {
+  collectionName: 'test-collection',
+  operation: 'insertOne',
+  args: [{ name: 'Arthur', surname: 'Dent' }]
+}
+const bufferValues = Array.from(bson.serialize({proxyRequest}).values())
+lambda.invoke({
+  FunctionName: `${serviceName}-${stage}-_serverless-mongo-proxy`,
+  InvocationType: 'RequestResponse',
+  Payload: JSON.stringify({ bufferValues }),
+}).then(result => {
+  console.log(result.insertedCount) // output: 1
+})
+```
+
+See [@restlessness/dao-mongo](https://www.npmjs.com/package/@restlessness/dao-mongo) package for an example of usage.
