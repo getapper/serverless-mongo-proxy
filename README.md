@@ -104,7 +104,7 @@ const proxyRequest = {
   operation: 'insertOne',
   args: [{ name: 'Arthur', surname: 'Dent' }]
 }
-const bufferValues = Array.from(bson.serialize({proxyRequest}).values())
+const bufferValues = Array.from(bson.serialize(proxyRequest).values())
 lambda.invoke({
   FunctionName: `${serviceName}-${stage}-_serverless-mongo-proxy`,
   InvocationType: 'RequestResponse',
