@@ -109,7 +109,7 @@ lambda.invoke({
   FunctionName: `${serviceName}-${stage}-_serverless-mongo-proxy`,
   InvocationType: 'RequestResponse',
   Payload: JSON.stringify({ bufferValues }),
-}).then(result => {
+}).then(({result}) => {
   console.log(result.insertedCount) // output: 1
 })
 ```

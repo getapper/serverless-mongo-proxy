@@ -72,7 +72,7 @@ export default async function(event: Event, context: Context) {
     delete result?.connection;
     delete result?.message;
 
-    const resultBuffer = Bson.serialize(Object.assign({}, result));
+    const resultBuffer = Bson.serialize({ result });
     return Array.from(resultBuffer.values());
   } catch (e) {
     return {
