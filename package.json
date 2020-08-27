@@ -1,6 +1,6 @@
 {
   "name": "serverless-mongo-proxy",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A serverless plugin that creates a mongodb proxy",
   "main": "dist/index.js",
   "scripts": {
