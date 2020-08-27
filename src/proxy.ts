@@ -33,6 +33,7 @@ export default async function(event: Event, context: Context) {
       const dbName = process.env['MONGO_DB_NAME'];
       db = dbName ? mongoClient.db(dbName) : mongoClient.db();
     } catch (e) {
+      console.error('Mongo connection', e);
       return {
         error: {
           message: 'Could not connect to the MongoDB server, make sure environment variable MONGO_URI is set.',
@@ -45,9 +46,10 @@ export default async function(event: Event, context: Context) {
   try {
     request = Bson.deserialize(Buffer.from(event.bufferValues));
   } catch (e){
+    console.error('Bson deserialize', e);
     return {
       error: {
-        message: `Error on bson serialize! ${e}`,
+        message: `Error on bson deserialize! ${e}`,
       },
     };
   }
@@ -60,6 +62,7 @@ export default async function(event: Event, context: Context) {
       result = await result.toArray();
     }
   } catch (e) {
+    console.error('Mongo query', e);
     return {
       error: {
         name: e.constructor.name,
@@ -75,6 +78,7 @@ export default async function(event: Event, context: Context) {
     const resultBuffer = Bson.serialize({ result });
     return Array.from(resultBuffer.values());
   } catch (e) {
+    console.error('Bson serialize', e);
     return {
       error: {
         message: `Error on bson serialize! ${e}`,
