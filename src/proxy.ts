@@ -12,14 +12,19 @@ interface ProxyRequest {
   args: any[]
 }
 
+interface ProxyResponse {
+  responseBufferValues?: number[]
+  error?: string
+}
+
 interface Event {
-  bufferValues: string
+  requestBufferValues: number[]
 }
 
 let mongoClient: MongoClient;
 let db: Db;
 
-export default async function(event: Event, context: Context) {
+export default async function(event: Event, context: Context): Promise<ProxyResponse> {
   context.callbackWaitsForEmptyEventLoop = false;
 
   if (!mongoClient) {
@@ -34,24 +39,16 @@ export default async function(event: Event, context: Context) {
       db = dbName ? mongoClient.db(dbName) : mongoClient.db();
     } catch (e) {
       console.error('Mongo connection', e);
-      return {
-        error: {
-          message: 'Could not connect to the MongoDB server, make sure environment variable MONGO_URI is set.',
-        },
-      };
+      return { error: e.stack || e };
     }
   }
 
   let request: ProxyRequest;
   try {
-    request = Bson.deserialize(Buffer.from(event.bufferValues));
-  } catch (e){
-    console.error('Bson deserialize', e);
-    return {
-      error: {
-        message: `Error on bson deserialize! ${e}`,
-      },
-    };
+    request = Bson.deserialize(Buffer.from(event.requestBufferValues));
+  } catch (e) {
+    console.error('Error on bson deserialize!', e);
+    return { error: e.stack || e };
   }
 
   let result;
@@ -62,27 +59,19 @@ export default async function(event: Event, context: Context) {
       result = await result.toArray();
     }
   } catch (e) {
-    console.error('Mongo query', e);
-    return {
-      error: {
-        name: e.constructor.name,
-        message: e.message,
-      },
-    };
+    console.error('Error executing mongo query!', e);
+    return { error: e.stack || e };
   }
 
   try {
     delete result?.connection;
     delete result?.message;
 
-    const resultBuffer = Bson.serialize({ result });
-    return Array.from(resultBuffer.values());
-  } catch (e) {
-    console.error('Bson serialize', e);
     return {
-      error: {
-        message: `Error on bson serialize! ${e}`,
-      },
+      responseBufferValues: Array.from(Bson.serialize({ result }).values()),
     };
+  } catch (e) {
+    console.error('Error on bson serialize!', e);
+    return { error: e.stack || e };
   }
 }

@@ -69,7 +69,7 @@ const lambda = new Lambda()
 lambda.invoke({
   FunctionName: `${serviceName}-${stage}-_serverless-mongo-proxy`,
   InvocationType: 'RequestResponse',
-  Payload: JSON.stringify({ bufferValues }),
+  Payload: JSON.stringify({ requestBufferValues }),
 }).then(...)
 ```
 see [aws docs](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#invoke-property) for details.
@@ -78,10 +78,10 @@ see [aws docs](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.ht
 The proxy uses [bson](https://www.npmjs.com/package/bson) to serialize/deserialize data between the proxy itself
 and the caller.
 
-The expected payload (_stringified_) has shape: `Payload: { bufferValues: number[] }` where `number[]`
+The expected _stringified_ payload has shape: `{ requestBufferValues: number[] }` where `number[]`
 contains the values of the buffer representing the request, serialized using bson.
 
-Example: `const bufferValues = Array.from(bson.serialize({...}).values())` 
+Example: `const requestBufferValues = Array.from(bson.serialize({...}).values())` 
 
 ###### Proxy Request
 The actual proxy request has shape:
@@ -94,9 +94,20 @@ interface ProxyRequest {
 }
 ```
 
+###### Proxy Response
+The proxy response has shape:
+
+```typescript
+interface ProxyResponse {
+  responseBufferValues?: number[]
+  error?: string
+}
+```
+
 #### Full example
 ```js
 const { Lambda } = require('aws-sdk')
+const Bson = require('bson')
 ...
 const lambda = new Lambda()
 const proxyRequest = {
@@ -108,10 +119,14 @@ const bufferValues = Array.from(bson.serialize(proxyRequest).values())
 lambda.invoke({
   FunctionName: `${serviceName}-${stage}-_serverless-mongo-proxy`,
   InvocationType: 'RequestResponse',
-  Payload: JSON.stringify({ bufferValues }),
-}).then(({result}) => {
+  Payload: JSON.stringify({ requestBufferValues }),
+}).then(response => {
+  const { requestBufferValues, error } = response
+  const { result } = bson.deserialize(Buffer.from(requestBufferValues))
   console.log(result.insertedCount) // output: 1
 })
 ```
+
+Note: the deserialized payload has shape `{ result: any }` and represents the mongodb operation result
 
 See [@restlessness/dao-mongo](https://www.npmjs.com/package/@restlessness/dao-mongo) package for an example of usage.
