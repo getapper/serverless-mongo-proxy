@@ -4,7 +4,9 @@ import { Context } from 'aws-lambda';
 import dotenv from 'dotenv';
 import dotenvExpand from 'dotenv-expand';
 
-dotenvExpand(dotenv.config());
+try {
+  dotenvExpand(dotenv.config());
+} catch (e) {}
 
 interface ProxyRequest {
   collectionName: string
