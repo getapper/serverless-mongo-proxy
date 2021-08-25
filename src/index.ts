@@ -15,7 +15,8 @@ class ServerlessMongoProxy {
   constructor(serverless, options) {
     this.serverless = serverless;
     this.options = options;
-    this.config = this.serverless.service?.custom && this.serverless.service.custom['mongo-proxy'];
+    const stage = this.getResolvedStage();
+    this.config = this.serverless.service?.custom?.[`mongo-proxy-${stage}`] ?? this.serverless.service?.custom?.['mongo-proxy'] ?? {};
     this.commands = {};
     this.hooks = {
       'before:offline:start:init': this.beforeOfflineStart.bind(this),
