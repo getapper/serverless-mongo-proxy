@@ -25,6 +25,35 @@ provider:
       Resource: '*'
 ```
 
+## Custom parameters
+It is possible to specify custom parameters via the following object:
+```yaml
+custom:
+  mongo-proxy:
+    mongoUri: 'mongodb://localhost:27017'
+    mongoDbName: 'myDatabase'
+```
+If different configuration is needed between different stages, it is possible to specify stage-specific custom objects:
+```yaml
+custom:
+  mongo-proxy-prod:
+    functionFields:
+      vpc:
+        securityGroupIds:
+          - sg-xxxxxxxx
+        subnetIds:
+          - subnet-xxxxxxxx
+          - subnet-xxxxxxxx
+```
+```yaml
+custom:
+  mongo-proxy-dev:
+    mongoUri: 'mongodb://localhost:27017'
+    mongoDbName: 'myDatabase'
+```
+
+
+
 ## Environment Variables
 
 #### Mongodb
@@ -58,6 +87,20 @@ custom:
     functionFields:
       warmup:
         enabled: true
+```
+
+#### VPC configuration
+If you need to put the proxy inside a VPC, for example to work with Mongo Atlas after a [Peering connection](https://docs.atlas.mongodb.com/security-vpc-peering/), you can use:
+```yaml
+custom:
+  mongo-proxy-prod:
+    functionFields:
+      vpc:
+        securityGroupIds:
+          - sg-xxxxxxxx
+        subnetIds:
+          - subnet-xxxxxxxx
+          - subnet-xxxxxxxx
 ```
 
 ## Usage
