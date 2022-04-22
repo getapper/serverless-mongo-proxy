@@ -1,46 +1,48 @@
-import { Cursor, Db, MongoClient } from 'mongodb';
-import Bson from 'bson';
-import { Context } from 'aws-lambda';
-import dotenv from 'dotenv';
-import dotenvExpand from 'dotenv-expand';
+import { AbstractCursor, Db, MongoClient } from "mongodb";
+import Bson from "bson";
+import { Context } from "aws-lambda";
+import dotenv from "dotenv";
+import dotenvExpand from "dotenv-expand";
 
 try {
   dotenvExpand(dotenv.config());
 } catch (e) {}
 
 interface ProxyRequest {
-  collectionName: string
-  operation: string
-  args: any[]
+  collectionName: string;
+  operation: string;
+  args: any[];
 }
 
 interface ProxyResponse {
-  responseBufferValues?: number[]
-  error?: string
+  responseBufferValues?: number[];
+  error?: string;
 }
 
 interface Event {
-  requestBufferValues: number[]
+  requestBufferValues: number[];
 }
 
 let mongoClient: MongoClient;
 let db: Db;
 
-export default async function(event: Event, context: Context): Promise<ProxyResponse> {
+export default async function (
+  event: Event,
+  context: Context,
+): Promise<ProxyResponse> {
   context.callbackWaitsForEmptyEventLoop = false;
 
   if (!mongoClient) {
     try {
-      mongoClient = await MongoClient.connect(process.env['MONGO_URI'], {
-        useUnifiedTopology: true,
+      mongoClient = await MongoClient.connect(process.env["MONGO_URI"], {
         connectTimeoutMS: 10000,
         socketTimeoutMS: 10000,
         serverSelectionTimeoutMS: 10000,
       });
-      const dbName = process.env['MONGO_DB_NAME'];
+      const dbName = process.env["MONGO_DB_NAME"];
       db = dbName ? mongoClient.db(dbName) : mongoClient.db();
     } catch (e) {
-      console.error('Mongo connection', e);
+      console.error("Mongo connection", e);
       return { error: e.stack || e };
     }
   }
@@ -49,7 +51,7 @@ export default async function(event: Event, context: Context): Promise<ProxyResp
   try {
     request = Bson.deserialize(Buffer.from(event.requestBufferValues));
   } catch (e) {
-    console.error('Error on bson deserialize!', e);
+    console.error("Error on bson deserialize!", e);
     return { error: e.stack || e };
   }
 
@@ -57,11 +59,11 @@ export default async function(event: Event, context: Context): Promise<ProxyResp
   try {
     const { collectionName, operation, args } = request;
     result = await db.collection(collectionName)[operation](...args);
-    if (result instanceof Cursor) {
+    if (result instanceof AbstractCursor) {
       result = await result.toArray();
     }
   } catch (e) {
-    console.error('Error executing mongo query!', e);
+    console.error("Error executing mongo query!", e);
     return { error: e.stack || e };
   }
 
@@ -73,7 +75,7 @@ export default async function(event: Event, context: Context): Promise<ProxyResp
       responseBufferValues: Array.from(Bson.serialize({ result }).values()),
     };
   } catch (e) {
-    console.error('Error on bson serialize!', e);
+    console.error("Error on bson serialize!", e);
     return { error: e.stack || e };
   }
 }
